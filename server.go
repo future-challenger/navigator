@@ -19,6 +19,8 @@ func prepare() {
 	indexController := new(controllers.IndexController)
 	feedbackController := new(controllers.FeedbackController)
 	booksController := new(controllers.BooksController)
+	loginController := new(controllers.LoginController)
+	registerController := new(controllers.RegisterController)
 
 	r.Get("/nav/index/:name", indexController.List)
 	//feedback
@@ -29,6 +31,12 @@ func prepare() {
 	r.Get("/nav/books", booksController.BookList)
 	r.Post("/nav/book/new", booksController.AddBook)
 	r.Post("/nav/book/update", booksController.UpdateBook)
+
+	// login
+	r.Post("/nav/login", loginController.Login)
+
+	// register
+	r.Post("/nav/register", registerController.Register)
 
 	m.Action(r.Handle)
 }
