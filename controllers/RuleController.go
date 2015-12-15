@@ -14,7 +14,7 @@ type RuleController struct {
 
 func (controller *RuleController) RuleList(req *http.Request, r render.Render) {
 	defer func() {
-		if err := reccover(); err != nil {
+		if err := recover(); err != nil {
 			fmt.Errorf("RuleController error:- %v", err)
 			r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["NORMAL_ERROR"], "message": "fail"})
 		}
@@ -26,9 +26,9 @@ func (controller *RuleController) RuleList(req *http.Request, r render.Render) {
 	r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["ALL_OK"], "message": "sucess", "data": modelList})
 }
 
-func (controller *RuleController) GetRule(req *http.Reqeust, r render.Render) {
+func (controller *RuleController) GetRule(req *http.Request, r render.Render) {
 	defer func() {
-		if err := reccover(); err != nil {
+		if err := recover(); err != nil {
 			fmt.Errorf("RuleController error:- %v", err)
 			r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["NORMAL_ERROR"], "message": "fail"})
 		}
@@ -37,7 +37,7 @@ func (controller *RuleController) GetRule(req *http.Reqeust, r render.Render) {
 	req.ParseForm()
 	ruleId := req.FormValue("ruleId")
 	tempRuleModel := new(models.RuleModel)
-	ruleModel := tempRuleModel.GetModel(ruleId)
+	ruleModel, _ := tempRuleModel.GetModel(ruleId)
 	if ruleModel == nil {
 		fmt.Println("No rule with such id : ", ruleId)
 		r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["NORMAL_ERROR"], "message": "fail"})
@@ -48,7 +48,7 @@ func (controller *RuleController) GetRule(req *http.Reqeust, r render.Render) {
 
 func (controller *RuleController) UpdateRule(req *http.Request, r render.Render) {
 	defer func() {
-		if err := reccover(); err != nil {
+		if err := recover(); err != nil {
 			fmt.Errorf("RuleController error:- %v", err)
 			r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["NORMAL_ERROR"], "message": "fail"})
 		}
@@ -56,8 +56,8 @@ func (controller *RuleController) UpdateRule(req *http.Request, r render.Render)
 
 	req.ParseForm()
 	ruleModelJson := req.FormValue("ruleJson")
-	ruleModel := NewRuleModel(ruleModelJson)
-	err := ruleModel.UpdateModel(bson.M{"rulecode": ruleModel.RuleCode})
+	ruleModel := models.NewRuleModel(ruleModelJson)
+	err := ruleModel.UpdateModel(bson.M{"rulecode": ruleModel.RuleCode}, ruleModel)
 	if err == nil {
 		r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["ALL_OK"], "message": "sucess", "data": ruleModel})
 	} else {
@@ -67,7 +67,7 @@ func (controller *RuleController) UpdateRule(req *http.Request, r render.Render)
 
 func (controller *RuleController) InsertRule(req *http.Request, r render.Render) {
 	defer func() {
-		if err := reccover(); err != nil {
+		if err := recover(); err != nil {
 			fmt.Errorf("RuleController error:- %v", err)
 			r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["NORMAL_ERROR"], "message": "fail"})
 		}
@@ -75,8 +75,8 @@ func (controller *RuleController) InsertRule(req *http.Request, r render.Render)
 
 	req.ParseForm()
 	ruleModelJson := req.FormValue("ruleJson")
-	ruleModel := NewRuleModel(ruleModelJson)
-	err := ruleModel.InsertModel(ruleModel})
+	ruleModel := models.NewRuleModel(ruleModelJson)
+	err := ruleModel.InsertModel(ruleModel)
 	if err == nil {
 		r.JSON(200, map[string]interface{}{"state": conf.ErrorCode["ALL_OK"], "message": "sucess", "data": ruleModel})
 	} else {
